@@ -1260,16 +1260,16 @@ func (r *Fetch) Group(ids ...int) *groupBuilder {
 
 // HistoryEntry has all fields from history_entry.
 type HistoryEntry struct {
-	ChangedFields   json.RawMessage
-	Entries         []string
-	ID              int
-	MeetingID       dsfetch.Maybe[int]
-	ModelID         dsfetch.Maybe[string]
-	OriginalModelID string
-	PositionID      int
-	Meeting         *dsfetch.Maybe[Meeting]
-	Model           HistoryEntryModelUnion
-	Position        *HistoryPosition
+	Entries               []string
+	ID                    int
+	MeetingID             dsfetch.Maybe[int]
+	ModelID               dsfetch.Maybe[string]
+	OriginalModelID       string
+	PositionID            int
+	StructuredInformation json.RawMessage
+	Meeting               *dsfetch.Maybe[Meeting]
+	Model                 HistoryEntryModelUnion
+	Position              *HistoryPosition
 }
 
 type historyEntryBuilder struct {
@@ -1279,13 +1279,13 @@ type historyEntryBuilder struct {
 func (b *historyEntryBuilder) lazy(ds *Fetch, idI any) *HistoryEntry {
 	id := idI.(int)
 	c := HistoryEntry{}
-	ds.HistoryEntry_ChangedFields(id).Lazy(&c.ChangedFields)
 	ds.HistoryEntry_Entries(id).Lazy(&c.Entries)
 	ds.HistoryEntry_ID(id).Lazy(&c.ID)
 	ds.HistoryEntry_MeetingID(id).Lazy(&c.MeetingID)
 	ds.HistoryEntry_ModelID(id).Lazy(&c.ModelID)
 	ds.HistoryEntry_OriginalModelID(id).Lazy(&c.OriginalModelID)
 	ds.HistoryEntry_PositionID(id).Lazy(&c.PositionID)
+	ds.HistoryEntry_StructuredInformation(id).Lazy(&c.StructuredInformation)
 	return &c
 }
 
@@ -1322,10 +1322,11 @@ type HistoryEntryModelUnion interface {
 	isHistoryEntryModelUnion()
 }
 
-func (*Assignment) isHistoryEntryModelUnion() {}
-func (*Motion) isHistoryEntryModelUnion()     {}
-func (*Poll) isHistoryEntryModelUnion()       {}
-func (*User) isHistoryEntryModelUnion()       {}
+func (*Assignment) isHistoryEntryModelUnion()  {}
+func (*MeetingUser) isHistoryEntryModelUnion() {}
+func (*Motion) isHistoryEntryModelUnion()      {}
+func (*Poll) isHistoryEntryModelUnion()        {}
+func (*User) isHistoryEntryModelUnion()        {}
 
 type historyEntryModelUnionBuilder struct {
 	builder[historyEntryModelUnionBuilder, *historyEntryModelUnionBuilder, HistoryEntryModelUnion, HistoryEntryModelUnion]
@@ -1353,6 +1354,14 @@ func (b *historyEntryModelUnionBuilder) lazy(ds *Fetch, id any) HistoryEntryMode
 			builder: builder[assignmentBuilder, *assignmentBuilder, Assignment, *Assignment]{
 				fetch: ds,
 				conv:  func(p *Assignment) Assignment { return *p },
+			},
+		}
+		return builder.lazy(ds, intId)
+	case "meeting_user":
+		builder := &meetingUserBuilder{
+			builder: builder[meetingUserBuilder, *meetingUserBuilder, MeetingUser, *MeetingUser]{
+				fetch: ds,
+				conv:  func(p *MeetingUser) MeetingUser { return *p },
 			},
 		}
 		return builder.lazy(ds, intId)
@@ -4053,6 +4062,7 @@ type MeetingUser struct {
 	ChatMessageIDs                []int
 	Comment                       string
 	GroupIDs                      []int
+	HistoryEntryIDs               []int
 	ID                            int
 	LockedOut                     bool
 	MeetingID                     int
@@ -4075,6 +4085,7 @@ type MeetingUser struct {
 	AssignmentCandidateList       []AssignmentCandidate
 	ChatMessageList               []ChatMessage
 	GroupList                     []Group
+	HistoryEntryList              []HistoryEntry
 	Meeting                       *Meeting
 	MotionEditorList              []MotionEditor
 	MotionSubmitterList           []MotionSubmitter
@@ -4104,6 +4115,7 @@ func (b *meetingUserBuilder) lazy(ds *Fetch, idI any) *MeetingUser {
 	ds.MeetingUser_ChatMessageIDs(id).Lazy(&c.ChatMessageIDs)
 	ds.MeetingUser_Comment(id).Lazy(&c.Comment)
 	ds.MeetingUser_GroupIDs(id).Lazy(&c.GroupIDs)
+	ds.MeetingUser_HistoryEntryIDs(id).Lazy(&c.HistoryEntryIDs)
 	ds.MeetingUser_ID(id).Lazy(&c.ID)
 	ds.MeetingUser_LockedOut(id).Lazy(&c.LockedOut)
 	ds.MeetingUser_MeetingID(id).Lazy(&c.MeetingID)
@@ -4178,6 +4190,19 @@ func (b *meetingUserBuilder) GroupList() *groupBuilder {
 			relField: "GroupList",
 			many:     true,
 			conv:     func(p *Group) Group { return *p },
+		},
+	}
+}
+
+func (b *meetingUserBuilder) HistoryEntryList() *historyEntryBuilder {
+	return &historyEntryBuilder{
+		builder: builder[historyEntryBuilder, *historyEntryBuilder, HistoryEntry, *HistoryEntry]{
+			fetch:    b.fetch,
+			parent:   b,
+			idField:  "HistoryEntryIDs",
+			relField: "HistoryEntryList",
+			many:     true,
+			conv:     func(p *HistoryEntry) HistoryEntry { return *p },
 		},
 	}
 }

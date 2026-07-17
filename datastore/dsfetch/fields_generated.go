@@ -1589,15 +1589,6 @@ func (r *Fetch) Group_WriteCommentSectionIDs(groupID int) *ValueIntSlice {
 	return &ValueIntSlice{fetch: r, key: key}
 }
 
-func (r *Fetch) HistoryEntry_ChangedFields(historyEntryID int) *ValueJSON {
-	key, err := dskey.FromParts("history_entry", historyEntryID, "changed_fields")
-	if err != nil {
-		return &ValueJSON{err: err}
-	}
-
-	return &ValueJSON{fetch: r, key: key}
-}
-
 func (r *Fetch) HistoryEntry_Entries(historyEntryID int) *ValueStringSlice {
 	key, err := dskey.FromParts("history_entry", historyEntryID, "entries")
 	if err != nil {
@@ -1650,6 +1641,15 @@ func (r *Fetch) HistoryEntry_PositionID(historyEntryID int) *ValueInt {
 	}
 
 	return &ValueInt{fetch: r, key: key, required: true}
+}
+
+func (r *Fetch) HistoryEntry_StructuredInformation(historyEntryID int) *ValueJSON {
+	key, err := dskey.FromParts("history_entry", historyEntryID, "structured_information")
+	if err != nil {
+		return &ValueJSON{err: err}
+	}
+
+	return &ValueJSON{fetch: r, key: key}
 }
 
 func (r *Fetch) HistoryPosition_EntryIDs(historyPositionID int) *ValueIntSlice {
@@ -2343,6 +2343,15 @@ func (r *Fetch) MeetingUser_GroupIDs(meetingUserID int) *ValueIntSlice {
 	}
 
 	return &ValueIntSlice{fetch: r, key: key, required: true}
+}
+
+func (r *Fetch) MeetingUser_HistoryEntryIDs(meetingUserID int) *ValueIntSlice {
+	key, err := dskey.FromParts("meeting_user", meetingUserID, "history_entry_ids")
+	if err != nil {
+		return &ValueIntSlice{err: err}
+	}
+
+	return &ValueIntSlice{fetch: r, key: key}
 }
 
 func (r *Fetch) MeetingUser_ID(meetingUserID int) *ValueInt {

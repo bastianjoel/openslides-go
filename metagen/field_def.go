@@ -294,6 +294,7 @@ var RelationListFields = map[string]string{
 	"meeting_user/assignment_candidate_ids":                    "assignment_candidate/meeting_user_id",
 	"meeting_user/chat_message_ids":                            "chat_message/meeting_user_id",
 	"meeting_user/group_ids":                                   "group/meeting_user_ids",
+	"meeting_user/history_entry_ids":                           "history_entry/model_id",
 	"meeting_user/motion_editor_ids":                           "motion_editor/meeting_user_id",
 	"meeting_user/motion_submitter_ids":                        "motion_submitter/meeting_user_id",
 	"meeting_user/motion_supporter_ids":                        "motion_supporter/meeting_user_id",
@@ -379,7 +380,7 @@ var RelationListFields = map[string]string{
 // to the fields, there relate to.
 var GenericRelationFields = map[string]map[string]string{
 	"agenda_item/content_object_id":      {"assignment": "agenda_item_id", "motion": "agenda_item_id", "motion_block": "agenda_item_id", "topic": "agenda_item_id"},
-	"history_entry/model_id":             {"assignment": "history_entry_ids", "motion": "history_entry_ids", "poll": "history_entry_ids", "user": "history_entry_ids"},
+	"history_entry/model_id":             {"assignment": "history_entry_ids", "meeting_user": "history_entry_ids", "motion": "history_entry_ids", "poll": "history_entry_ids", "user": "history_entry_ids"},
 	"list_of_speakers/content_object_id": {"assignment": "list_of_speakers_id", "meeting_mediafile": "list_of_speakers_id", "motion": "list_of_speakers_id", "motion_block": "list_of_speakers_id", "topic": "list_of_speakers_id"},
 	"mediafile/owner_id":                 {"meeting": "mediafile_ids", "organization": "mediafile_ids"},
 	"personal_note/content_object_id":    {"motion": "personal_note_ids"},
@@ -516,13 +517,13 @@ var RestrictionModes = map[string]string{
 	"group/write_comment_section_ids":                    "A",
 
 	// history_entry
-	"history_entry/changed_fields":    "A",
-	"history_entry/entries":           "A",
-	"history_entry/id":                "A",
-	"history_entry/meeting_id":        "A",
-	"history_entry/model_id":          "A",
-	"history_entry/original_model_id": "A",
-	"history_entry/position_id":       "A",
+	"history_entry/entries":                "A",
+	"history_entry/id":                     "A",
+	"history_entry/meeting_id":             "A",
+	"history_entry/model_id":               "A",
+	"history_entry/original_model_id":      "A",
+	"history_entry/position_id":            "A",
+	"history_entry/structured_information": "A",
 
 	// history_position
 	"history_position/entry_ids":        "A",
@@ -840,6 +841,7 @@ var RestrictionModes = map[string]string{
 	"meeting_user/assignment_candidate_ids":         "A",
 	"meeting_user/chat_message_ids":                 "A",
 	"meeting_user/group_ids":                        "A",
+	"meeting_user/history_entry_ids":                "A",
 	"meeting_user/id":                               "A",
 	"meeting_user/motion_editor_ids":                "A",
 	"meeting_user/motion_submitter_ids":             "A",
